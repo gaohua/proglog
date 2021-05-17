@@ -87,8 +87,8 @@ func (l *Log) Append(record *api.Record) (uint64, error) {
 }
 
 func (l *Log) Read(off uint64) (*api.Record, error) {
-	l.mu.Lock()
-	defer l.mu.Unlock()
+	l.mu.RLock()
+	defer l.mu.RUnlock()
 	var s *segment
 	for _, segment := range l.segments {
 		if segment.baseOffset <= off && off < segment.nextOffset {
@@ -143,6 +143,7 @@ func (l *Log) HighestOffset() (uint64, error) {
 	return off - 1, nil
 }
 
+// Truncate truncate removes all segments whose highest offset is lower than lowest.
 func (l *Log) Truncate(lowest uint64) error {
 	l.mu.Lock()
 	defer l.mu.Unlock()
