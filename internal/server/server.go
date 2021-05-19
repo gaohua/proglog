@@ -13,11 +13,6 @@ type Config struct {
 
 var _ api.LogServer = (*grpcServer)(nil)
 
-type grpcServer struct {
-	api.UnimplementedLogServer
-	*Config
-}
-
 func NewGRPCServer(config *Config) (*grpc.Server, error) {
 	gsrv := grpc.NewServer()
 	srv, err := newgrpcServer(config)
@@ -26,6 +21,11 @@ func NewGRPCServer(config *Config) (*grpc.Server, error) {
 	}
 	api.RegisterLogServer(gsrv, srv)
 	return gsrv, nil
+}
+
+type grpcServer struct {
+	api.UnimplementedLogServer
+	*Config
 }
 
 func newgrpcServer(config *Config) (srv *grpcServer, err error) {
